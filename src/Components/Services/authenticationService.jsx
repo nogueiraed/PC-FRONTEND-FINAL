@@ -3,7 +3,7 @@ const API_URL = "http://localhost:3001";
 
 class AuthenticationService {
   async auth(userName, password) {
-    const response = await fetch(`${API_URL}/auth`, {
+    const response = await fetch(`${API_URL}/authRoutes`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

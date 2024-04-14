@@ -1,13 +1,13 @@
-import Layout from "../template/Layout";
+import StandardPage from "../PageLayout/standardPage";
 import Carousel from "react-bootstrap/Carousel";
-import Precision from "../Components/images/Precision.png";
-import Van from "../Components/images/Van.jpg";
-import Logo from "../Components/images/Logo.png";
+import Precision from "../Images/Precision.png";
+import Van from "../Images/Van.jpg";
+import Logo from "../Images/Logo.png";
 
 
-export default function MenuPage(props) {
+export default function Home(props) {
   return (
-    <Layout>
+    <StandardPage>
       <div>
         <Carousel fade style={{ height: "75vh" }}>
           
@@ -43,6 +43,6 @@ export default function MenuPage(props) {
 
         </Carousel>
       </div>
-    </Layout>
+    </StandardPage>
   );
 }

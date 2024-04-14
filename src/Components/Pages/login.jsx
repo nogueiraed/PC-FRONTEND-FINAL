@@ -1,13 +1,13 @@
 import { useContext, useState } from "react";
 import { Container, Form, Button, Alert } from "react-bootstrap";
-import { Context } from "../Context/GlobalContext";
+import { UserContext } from "../Context/GlobalContext";
 import { useNavigate } from "react-router-dom";
 import AuthenticationService from "../Services/authenticationService";
 
 const authenticationService = new AuthenticationService();
 
 export default function Login(props) {
-  const { setUser } = useContext(Context);
+  const { setUser } = useContext(UserContext);
   const [userName, setUserName] = useState("");
   const [password, setPassWord] = useState("");
   const [error, setError] = useState(null);

@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Form } from "react-bootstrap";
-import Layout from "../template/Layout";
+import { Table, Button, Form, Container, Row, Col } from "react-bootstrap";
+import StandardPage from "../PageLayout/standardPage";
 import { useNavigate } from "react-router-dom";
 
-function formatarData(dateString) {
-  const data = new Date(dateString);
-  const dia = data.getDate().toString().padStart(2, "0");
-  const mes = (data.getMonth() + 1).toString().padStart(2, "0");
-  const ano = data.getFullYear();
-  return `${dia}/${mes}/${ano}`;
+function SetDate(dateString) {
+  const date = new Date(dateString);
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
 }
 
-function DailyWorksheetList() {
+function DwList() {
   const navigate = useNavigate();
   const [dailyWorksheets, setDailyWorksheets] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -34,7 +34,6 @@ function DailyWorksheetList() {
   }, []);
 
   const handleEdit = (dailyWorksheet) => {
-    console.log("Data being passed for editing:", dailyWorksheet); // Adicionando um log para verificar os dados passados para edição
     setIsEditing(true);
     setEditingWorksheet(dailyWorksheet);
     navigate("/DW", { state: { isEditing: true, editingDW: dailyWorksheet } });
@@ -53,7 +52,7 @@ function DailyWorksheetList() {
     } catch (err) {
       console.error("Error deleting Daily Worksheet:", err);
     }
-    console.log("Deleted Daily Worksheet ID:", dailyWorksheet.id); // Adicionar log para verificar o ID do Daily Worksheet excluído
+    console.log("Deleted Daily Worksheet ID:", dailyWorksheet.id); 
   };
 
   const handleSearch = (e) => {
@@ -65,20 +64,25 @@ function DailyWorksheetList() {
       worksheet.jobNumber.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Adicionando logs para depuração
-  console.log("isEditing:", isEditing);
-  console.log("editingWorksheet:", editingWorksheet);
-
   return (
-    <Layout>
-      <div className="mb-3">
-        <Form.Control
-          type="text"
-          placeholder="Search by Job Number"
-          value={searchTerm}
-          onChange={handleSearch}
-        />
-      </div>
+    <StandardPage>
+      <Container>
+        <Row className="mb-3">
+          <Col xs={6}>
+            <Form.Control
+              type="text"
+              placeholder="Search by Job Number"
+              value={searchTerm}
+              onChange={handleSearch}
+            />
+          </Col>
+          <Col xs={6} className="d-flex justify-content-end">
+            <Button variant="primary" style={{ backgroundColor: "#003366" }} onClick={() => navigate("/DW")}>
+              New DW
+            </Button>
+          </Col>
+        </Row>
+      </Container>
       <Table striped bordered hover>
         <thead>
           <tr>
@@ -93,12 +97,13 @@ function DailyWorksheetList() {
           {filteredWorksheets.map((dailyWorksheet) => (
             <tr key={dailyWorksheet.id}>
               <td>{dailyWorksheet.jobNumber}</td>
-              <td>{formatarData(dailyWorksheet.date)}</td>
+              <td>{SetDate(dailyWorksheet.date)}</td>
               <td>{dailyWorksheet.teamLeader}</td>
               <td>{dailyWorksheet.contractType}</td>
               <td>
                 <Button
                   variant="outline-primary"
+                  style={{ margin: '5px' }}
                   onClick={() => handleEdit(dailyWorksheet)}
                 >
                   Edit
@@ -114,8 +119,8 @@ function DailyWorksheetList() {
           ))}
         </tbody>
       </Table>
-    </Layout>
+    </StandardPage>
   );
 }
 
-export default DailyWorksheetList;
+export default DwList;

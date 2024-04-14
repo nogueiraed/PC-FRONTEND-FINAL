@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Container, Form, Row, Col, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-export default function FormDW(props) {
+export default function DwForm(props) {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const headers = {
@@ -22,16 +22,13 @@ export default function FormDW(props) {
     return `${year}-${month}-${day}`;
   };
 
-  function gravarDailyWorksheet(dailyWorksheet) {
-    console.log("URL da requisição:", url);
-    console.log("Dados a serem enviados para o backend:", dailyWorksheet);
+  function saveDailyWorksheet(dailyWorksheet) {
+    let requestUrl = url;
+    let method = "POST";
   
-    let requestUrl = url; // URL padrão para criar uma nova dailyWorksheet
-    let method = "POST"; // Método padrão para criar uma nova dailyWorksheet
-  
-    if (isEditing) { // Se estivermos editando, precisamos ajustar a URL e o método
-      requestUrl = `${url}/${dailyWorksheet.id}`; // Adicionamos o ID à URL para a edição
-      method = "PUT"; // Usamos o método PUT para editar uma dailyWorksheet existente
+    if (isEditing) {
+      requestUrl = `${url}/${dailyWorksheet.id}`;
+      method = "PUT";
     }
   
     fetch(requestUrl, {
@@ -39,28 +36,26 @@ export default function FormDW(props) {
       headers,
       body: JSON.stringify(dailyWorksheet),
     })
-      .then((resposta) => {
-        if (!resposta.ok) {
+      .then((response) => {
+        if (!response.ok) {
           throw new Error("Failed to save daily worksheet. Please try again later.");
         }
-        return resposta.json();
+        return response.json();
       })
-      .then((dados) => {
-        console.log("Resposta do servidor:", dados);
+      .then((data) => {
         alert("Daily worksheet saved successfully");
         navigate("/DwList");
       })
       .catch((error) => {
-        console.error("Erro na requisição:", error);
         alert(error.message);
       });
   }
   
 
-  const [validado, setValidado] = useState(false);
+  const [validated, setValidated] = useState(false);
 
   const [dailyWorksheet, setDailyWorksheet] = useState({
-    id: editingDW.id || "", // <-- Incluído o ID do registro sendo editado
+    id: editingDW.id || "",
     jobNumber: "",
     dailyWorksheetDate: getCurrentDate(),
     site: "",
@@ -73,8 +68,7 @@ export default function FormDW(props) {
     poNumber: "",
   });
 
-  function manipulaEnvio(event) {
-    console.log("Manipulando envio do formulário");
+  function handleOnSubmit(event) {
     const form = event.currentTarget;
 
     if (form.checkValidity() === true) {
@@ -82,7 +76,7 @@ export default function FormDW(props) {
       const formattedDate = date.toISOString().split('T')[0];
       setDailyWorksheet({ ...dailyWorksheet, dailyWorksheetDate: formattedDate });
 
-      gravarDailyWorksheet(dailyWorksheet);
+      saveDailyWorksheet(dailyWorksheet);
       setDailyWorksheet({
         id: "",
         jobNumber: "",
@@ -96,9 +90,9 @@ export default function FormDW(props) {
         extraProduct: "",
         poNumber: "",
       });
-      setValidado(false);
+      setValidated(false);
     } else {
-      setValidado(true);
+      setValidated(true);
     }
 
     event.preventDefault();
@@ -107,9 +101,6 @@ export default function FormDW(props) {
 
   useEffect(() => {
     if (isEditing && Object.keys(editingDW).length !== 0) {
-      console.log("Dados de edição recebidos:", editingDW);
-      console.log("isEditing:", isEditing);
-      console.log("Chaves em editingDW:", Object.keys(editingDW));
       setDailyWorksheet(prevState => ({
         ...prevState,
         ...editingDW,
@@ -118,27 +109,24 @@ export default function FormDW(props) {
     }
   }, [isEditing, editingDW]);
 
-  function manipularMudanca(e, index) {
+  function handleOnChange(e, index) {
     const { name, value } = e.target;
     const list = [...dailyWorksheet.cleaners];
     list[index][name] = value;
     setDailyWorksheet({ ...dailyWorksheet, cleaners: list });
-    console.log("Alterações nos campos do formulário:", dailyWorksheet);
   }
 
-  function adicionarLimpador() {
+  function addCleaner() {
     setDailyWorksheet({
       ...dailyWorksheet,
       cleaners: [...dailyWorksheet.cleaners, { name: "", timeIn: "", timeOut: "" }],
     });
-    console.log("Adicionado limpador. Estado atualizado:", dailyWorksheet);
   }
 
-  function removerLimpador(index) {
+  function deleteCleaner(index) {
     const list = [...dailyWorksheet.cleaners];
     list.splice(index, 1);
     setDailyWorksheet({ ...dailyWorksheet, cleaners: list });
-    console.log("Removido limpador. Estado atualizado:", dailyWorksheet);
   }
 
   return (
@@ -150,8 +138,8 @@ export default function FormDW(props) {
       <Form
         method="post"
         noValidate
-        validated={validado}
-        onSubmit={manipulaEnvio}
+        validated={validated}
+        onSubmit={handleOnSubmit}
       >
         <Row className="mb-3">
           <Form.Group as={Col} md="4">
@@ -290,7 +278,6 @@ export default function FormDW(props) {
             </Form.Control.Feedback>
           </Form.Group>
         </Row>
-        {/* Cleaners section */}
         <Row className="mb-3">
           <Col>
             <h4>Cleaners</h4>
@@ -303,7 +290,7 @@ export default function FormDW(props) {
                       type="text"
                       name="name"
                       value={cleaner.name}
-                      onChange={(e) => manipularMudanca(e, index)}
+                      onChange={(e) => handleOnChange(e, index)}
                       placeholder="Full Name"
                     />
                     <Form.Control.Feedback type="invalid">
@@ -316,7 +303,7 @@ export default function FormDW(props) {
                       type="time"
                       name="timeIn"
                       value={cleaner.timeIn}
-                      onChange={(e) => manipularMudanca(e, index)}
+                      onChange={(e) => handleOnChange(e, index)}
                       placeholder="Time In"
                     />
                     <Form.Control.Feedback type="invalid">
@@ -329,7 +316,7 @@ export default function FormDW(props) {
                       type="time"
                       name="timeOut"
                       value={cleaner.timeOut}
-                      onChange={(e) => manipularMudanca(e, index)}
+                      onChange={(e) => handleOnChange(e, index)}
                       placeholder="Time Out"
                     />
                     <Form.Control.Feedback type="invalid">
@@ -337,23 +324,30 @@ export default function FormDW(props) {
                     </Form.Control.Feedback>
                   </Col>
                   <Col>
-                    <Button variant="danger" onClick={() => removerLimpador(index)}>
-                      X
+                  <div className="d-flex justify-content-start">
+                    <Button variant="primary" className="me-1" onClick={addCleaner}>
+                      +
                     </Button>
+
+                    <Button variant="danger" onClick={() => deleteCleaner(index)}>
+                        X
+                    </Button>
+                  </div>
                   </Col>
                 </Form.Group>
               </React.Fragment>
             ))}
+
           </Col>
         </Row>
-        <Button variant="primary" onClick={adicionarLimpador}>
-          Add Cleaner
-        </Button>
-        <br />
-        <br />
-        <Button variant="success" type="submit">
-          {isEditing ? "Save Changes" : "Register"}
-        </Button>
+        <div className="d-flex justify-content-start">
+          <Button variant="success" type="submit" className="me-2">
+            {isEditing ? "Save Changes" : "Register"}
+          </Button>
+          <Button variant="primary" onClick={() => navigate("/DwList")}>
+            Back
+          </Button>
+        </div>
       </Form>
       <br />
     </Container>

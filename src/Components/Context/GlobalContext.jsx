@@ -1,6 +1,6 @@
 import { useState, createContext } from "react";
 
-export const Context = createContext([]);
+export const UserContext = createContext([]);
 
 export default function GlobalContext(props) {
   const [user, setUser] = useState({
@@ -8,8 +8,8 @@ export default function GlobalContext(props) {
     logged: false,
   });
   return (
-    <Context.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser }}>
       {props.children}
-    </Context.Provider>
+    </UserContext.Provider>
   );
 }

@@ -1,20 +1,19 @@
-//App.js
-
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { useContext, useEffect } from "react";
-import { Context } from "./Context/GlobalContext";
-import MenuPage from "./pages/MenuPage";
-import Page404 from "./pages/Page404";
-import Login from "./pages/Login";
-import RegDW from "./pages/DW";
-import AuthenticationService from "./Services/authenticationService";
-import DailyWorksheetList from "./pages/DwList";
-import FormDailyWorksheet from "./forms/FormDailyWorksheet"
+import { UserContext } from "./Components/Context/GlobalContext";
+import AuthenticationService from "./Components/Services/authenticationService";
+import Page404 from "./Components/Pages/page404";
+import Home from "./Components/Pages/home";
+import Login from "./Components/Pages/login";
+import DwPage from "./Components/Pages/dwPage";
+import DwList from "./Components/Tables/dwList";
+import JaPage from "./Components/Pages/jaPage";
+import JaList from "./Components/Tables/jaList"
 
 const authenticationService = new AuthenticationService();
 
 function App() {
-  const { user, setUser } = useContext(Context);
+  const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,12 +24,13 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/DW" element={<RegDW />} />
-      <Route path="/DwList" element={<DailyWorksheetList />} />
-      <Route path="/FormDailyWorksheet" element={<FormDailyWorksheet />} />
-      <Route path="/" element={<MenuPage />} />
-      <Route path="*" element={<Page404 />} />
       <Route path="/login" element={<Login />} />
+      <Route path="*" element={<Page404 />} />
+      <Route path="/" element={<Home />} />
+      <Route path="/DW" element={<DwPage />} />
+      <Route path="/DwList" element={<DwList />} />
+      <Route path="/JA" element={<JaPage />} />
+      <Route path="/JaList" element={<JaList />} />
     </Routes>
   );
 }
